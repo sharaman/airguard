@@ -2,8 +2,6 @@ import re
 
 import numpy as np
 from langchain_groq import ChatGroq
-from langfuse.langchain import CallbackHandler as LangfuseCallback
-
 from airguard.config import GROQ_API_KEY, LLM_MODEL
 from airguard.db.repository import get_recent_readings
 from airguard.graph.state import AirGuardState
@@ -13,7 +11,6 @@ from airguard.tools.calculator_tool import calculate_score, detect_anomaly_zscor
 from airguard.tools.pollen_uv_tool import get_pollen_and_uv
 
 llm = ChatGroq(model=LLM_MODEL, temperature=0, api_key=GROQ_API_KEY)
-langfuse_handler = LangfuseCallback()
 
 REPORT_PROMPT = """\
 Сформируй короткое Telegram-сообщение (до 10 строк) о качестве воздуха.
@@ -102,7 +99,7 @@ def _determine_alert_type(state: AirGuardState) -> str:
     return "ok"
 
 
-def report_node(state: AirGuardState) -> AirGuardState:
+def report_node(state: AirGuardState, config=None) -> AirGuardState:
     alert_type = _determine_alert_type(state)
 
     rag = state.get("rag_context", "")
@@ -119,6 +116,7 @@ def report_node(state: AirGuardState) -> AirGuardState:
         user_profile=state["user_profile"],
     )
 
-    response = llm.invoke(prompt, config={"callbacks": [langfuse_handler]})
+    callbacks = config.get("callbacks", []) if config else []
+    response = llm.invoke(prompt, config={"callbacks": callbacks})
 
     return {"alert_type": alert_type, "alert_message": response.content}
