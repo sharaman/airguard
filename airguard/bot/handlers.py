@@ -4,6 +4,8 @@ import time
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from langfuse.langchain import CallbackHandler as LangfuseCallback
+
 from airguard.db.repository import get_user, save_user, save_measurement, update_user, get_last_measurements
 from airguard.graph.builder import build_graph
 
@@ -151,8 +153,13 @@ async def check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "user_profile": _build_user_profile(user),
     }
 
+    handler = LangfuseCallback()
+
     try:
-        result = await graph.ainvoke(state)
+        result = await graph.ainvoke(
+            state,
+            config={"callbacks": [handler]},
+        )
     except Exception:
         logger.exception("Graph invocation failed")
         await update.message.reply_text("Не удалось получить данные. Попробуйте позже.")
