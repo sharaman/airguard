@@ -8,7 +8,6 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 OPENAQ_API_KEY = os.environ["OPENAQ_API_KEY"]
-OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API_KEY"]
 OPENUV_API_KEY = os.environ["OPENUV_API_KEY"]
 
 LANGFUSE_PUBLIC_KEY = os.environ["LANGFUSE_PUBLIC_KEY"]
