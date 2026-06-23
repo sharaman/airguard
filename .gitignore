@@ -1,0 +1,10 @@
+.env
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
+db/*.db
+airguard/rag/faiss_index/
+.claude/
+AirGuard_Project_Plan.md
+CLAUDE.md
